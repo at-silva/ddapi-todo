@@ -1,0 +1,28 @@
+version: "3.7"
+
+services:
+  backend:
+    image: golang:1.15
+    env_file: .env
+    volumes:
+      - ./backend:/app
+      - db-volume:/data
+    ports:
+      - "8080:8080"
+    working_dir: "/app"
+    command: ["bash", "-c", "go run main.go"]
+
+  frontend:
+    depends_on:
+      - backend
+    image: node:12
+    env_file: .env
+    volumes:
+      - ./frontend:/app
+    ports:
+      - "3000:3000"
+    working_dir: "/app"
+    command: ["bash", "-c", "make start"]
+
+volumes:
+  db-volume:

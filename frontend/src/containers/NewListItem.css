@@ -1,0 +1,12 @@
+
+@media all and (min-width: 480px) {
+  .NewListItem {
+    padding: 60px 0;
+    text-align: center;
+  }
+
+  .NewListItem form {
+    margin: 0 auto;
+    max-width: 320px;
+  }
+}

@@ -1,0 +1,4 @@
+*.db
+.envrc
+.vscode
+.env
