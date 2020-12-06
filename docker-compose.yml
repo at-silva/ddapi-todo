@@ -1,0 +1,26 @@
+version: "3.7"
+
+services:
+  db:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: bluetachi
+
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080
+
+  app:
+    image: golang:1.14
+    environment:
+      MYSQL_DSN: "root:password@tcp(db)/bluetachi"
+      QUERY_VALIDATOR_KEY: mykey
+    volumes:
+      - ./:/app
+    ports:
+      - "8081:8080"
+    working_dir: "/app"
+    command: ["bash", "-c", "go run ./..."]
