@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/at-silva/ddapi-todo/backend/cors"
 	"github.com/at-silva/ddapi-todo/backend/user"
 
 	"github.com/at-silva/ddapi/db"
@@ -37,37 +38,38 @@ func main() {
 
 	secretbs := []byte(secret)
 
-	createUser := user.MakeCreate(mustOpenDB(dbPath, "rw"))
+	createUser := user.MakeCreate(mustOpenDB(dbPath))
 	createUserHandler := user.MakeHandler(iss, secretbs, createUser)
-	http.Handle("/user", createUserHandler)
+	http.Handle("/user", cors.Enable(createUserHandler))
 
-	getUser := user.MakeGet(mustOpenDB(dbPath, "ro"))
+	getUser := user.MakeGet(mustOpenDB(dbPath))
 	getUserHandler := user.MakeHandler(iss, secretbs, getUser)
-	http.Handle("/login", getUserHandler)
+	http.Handle("/login", cors.Enable(getUserHandler))
 
 	execHandler := handler.NewExec(
-		db.New(mustOpenDB(dbPath, "rw")),
+		db.New(mustOpenDB(dbPath)),
 		check.Signature(check.Sha256HMAC(secretbs)),
 		session.Reader(session.HS256JWT(secretbs)),
 		check.Params(check.JSONSchema),
 	)
-	http.Handle("/exec", execHandler)
+	http.Handle("/exec", cors.Enable(execHandler))
 
 	queryHandler := handler.NewQuery(
-		db.New(mustOpenDB(dbPath, "ro")),
+		db.New(mustOpenDB(dbPath)),
 		check.Signature(check.Sha256HMAC(secretbs)),
 		session.Reader(session.HS256JWT(secretbs)),
 		check.Params(check.JSONSchema),
 	)
-	http.Handle("/query", queryHandler)
+	http.Handle("/query", cors.Enable(queryHandler))
 
 	log.Println("starting server at :8080")
 
+	//TODO: parameterize
 	log.Fatalln(http.ListenAndServe(":8080", nil))
 }
 
-func mustOpenDB(dbPath, mode string) *sqlx.DB {
-	db, err := sqlx.Open("sqlite3", fmt.Sprintf("file:%s?cache=shared&mode=%s", dbPath, mode))
+func mustOpenDB(dbPath string) *sqlx.DB {
+	db, err := sqlx.Open("sqlite3", fmt.Sprintf("file:%s?cache=shared&mode=rw", dbPath))
 	if err != nil {
 		panic(err)
 	}

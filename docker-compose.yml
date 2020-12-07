@@ -1,26 +1,27 @@
 version: "3.7"
 
 services:
-  db:
-    image: mysql
-    command: --default-authentication-plugin=mysql_native_password
+  backend:
+    image: golang:1.15
     environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: bluetachi
-
-  adminer:
-    image: adminer
-    ports:
-      - 8080:8080
-
-  app:
-    image: golang:1.14
-    environment:
-      MYSQL_DSN: "root:password@tcp(db)/bluetachi"
-      QUERY_VALIDATOR_KEY: mykey
+      DDAPI_TODO_SECRET: $DDAPI_TODO_SECRET
+      DDAPI_TODO_DB: $DDAPI_TODO_DB
+      DDAPI_TODO_ISS: $DDAPI_TODO_ISS
     volumes:
-      - ./:/app
+      - ./backend:/app
     ports:
-      - "8081:8080"
+      - "8080:8080"
     working_dir: "/app"
-    command: ["bash", "-c", "go run ./..."]
+    command: ["bash", "-c", "go run main.go"]
+
+  frontend:
+    image: node:12
+    environment:
+      DDAPI_TODO_SECRET: $DDAPI_TODO_SECRET
+      DDAPI_BACKEND_URL: "http://localhost:8080/login"
+    volumes:
+      - ./frontend:/app
+    ports:
+      - "3000:3000"
+    working_dir: "/app"
+    command: ["bash", "-c", "npm start"]

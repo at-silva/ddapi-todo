@@ -64,8 +64,11 @@ func MakeGet(db *sqlx.DB) IDFunc {
 		)
 
 		err := r.Scan(&userID, &pwd)
+		if errors.Is(err, sql.ErrNoRows) {
+			return 0, ErrAccessDenied
+		}
 		if err != nil {
-			return 0, fmt.Errorf("could not scan user: %w", r.Err())
+			return 0, fmt.Errorf("could not scan user: %w", err)
 		}
 
 		err = bcrypt.CompareHashAndPassword([]byte(pwd), []byte(password))

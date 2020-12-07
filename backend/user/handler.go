@@ -53,6 +53,11 @@ func MakeHandler(iss string, jwtSecret []byte, getUserID IDFunc) http.HandlerFun
 		}
 
 		userID, err := getUserID(r.Context(), req.Username, req.Password)
+		if errors.Is(ErrAccessDenied, err) {
+			http.Error(w, errEncode(err), http.StatusUnauthorized)
+			return
+		}
+
 		if err != nil {
 			http.Error(w, errEncode(fmt.Errorf("could not get user: %w", err)), http.StatusInternalServerError)
 			return
