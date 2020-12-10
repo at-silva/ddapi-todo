@@ -22,7 +22,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "ddapi-sign": "node src/ddapi/sign.js"
+    "ddapi-sign": "node  src/ddapi/sign.js"
   },
   "eslintConfig": {
     "extends": [
@@ -43,6 +43,13 @@
     ]
   },
   "devDependencies": {
+    "@babel/core": "^7.12.10",
+    "@babel/generator": "^7.12.10",
+    "@babel/parser": "^7.12.10",
+    "@babel/preset-react": "^7.12.10",
+    "acorn": "^8.0.4",
+    "acorn-jsx": "^5.3.1",
+    "acorn-walk": "^8.0.0",
     "eslint": "^7.15.0",
     "eslint-plugin-react": "^7.21.5"
   }

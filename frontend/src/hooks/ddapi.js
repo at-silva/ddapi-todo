@@ -1,82 +1,80 @@
-import DDAPI_SIGNATURES from '../ddapi';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { onError } from '../libs/errorLib';
 import { useAppContext } from '../libs/contextLib';
+import { prepareBody } from '../ddapi';
 
-function prepareBody(q) {
-    if (!q.params) {
-        q = { ...q, params: {} };
-        const required = [];
-        for (const prop in q.paramsSchema) {
-            required.push(prop);
-        }
-
-        q.paramsSchema = {
-            type: "object",
-            required,
-            properties: {
-                ...q.paramsSchema,
-            }
-        }
-    }
-
-    return JSON.stringify({
-        ...q,
-        sqlSignature: DDAPI_SIGNATURES[q.DDAPIID + "_sql"],
-        paramsSchemaSignature: DDAPI_SIGNATURES[q.DDAPIID + "_params_schema"],
-        paramsSchema: JSON.stringify(q.paramsSchema),
-        params: JSON.stringify(q.params)
-    });
-}
-
-export const useSqlQuery = async (query) => {
-    const [isLoading, setIsLoading] = useState(false);
-    const [data, setData] = useState(null);
+export const useNewListForm = (lists, setLists) => {
+    const [inputs, setInputs] = useState({});
+    const [isLoading, setIsLoading] = useState({});
     const { token } = useAppContext();
 
-    setIsLoading(true);
-    axios.post('http://localhost:8080/query', prepareBody(query), {
-        headers: { Authorization: `Bearer ${token}` }
-    }).then(response => {
-        setData(response.data.data);
-        setIsLoading(false);
-    }).catch(error => {
-        onError(error);
-        setIsLoading(false);
-    });
+    const handleSubmit = (event) => {
+        if (event) {
+            event.preventDefault();
+        }
 
+        const query = {
+            DDAPIID: `list-insert`,
+            sql: `insert into list(
+                    user_id, 
+                    list_title, 
+                    list_created_at
+                  ) values(
+                    :sub, 
+                    :title, 
+                    date('now')
+                  )`,
+            params: {
+                title: inputs.title,
+            },
+            paramsSchema: {
+                sub: { type: "string" },
+                title: {
+                    type: "string",
+                    minLength: 1,
+                    maxLength: 100,
+                },
+            }
+        };
 
-    //     async function onLoad() {
-    //     const getListByUserQuery = {
-    //         DDAPIID: "get-lists-by-sub",
-    //         sql: `select list_id listId, user_id userId, list_title title, list_created_at createdAt from list where user_id = :sub`,
-    //         paramsSchema: {
-    //             type: "object",
-    //             required: ["sub"],
-    //             properties: {
-    //                 sub: {
-    //                     type: "string"
-    //                 },
-    //             }
-    //         }
-    //     };
+        // axios.post('http://localhost:8080/exec', prepareBody(query), {
+        //     headers: { Authorization: `Bearer ${token}` }
+        // }).then(response => {
+        //     lists = [...lists, {
+        //         title: inputs.title,
+        //         id: response.data.data.lastInsertedId
+        //     }];
+        //     setLists(lists);
+        //     setIsLoading(false);
+        // }).catch(error => {
+        //     onError(error);
+        //     setIsLoading(false);
+        // });
+    }
 
-    //     try {
-    //         const result = await axios({
-    //             method: 'post',
-    //             url: 'http://localhost:8080/query',
-    //             data: prepareBody(getListByUserQuery),
-    //             headers: {
-    //                 Authorization: `Bearer ${token}`
-    //             }
-    //         });
-    //         console.log({ result });
-    //     } catch (e) {
-    //         onError(e);
-    //     }
-    // };
+    // const handleInputChange = (event) => {
+    //     event.persist();
+    //     setInputs(inputs => ({ ...inputs, [event.target.name]: event.target.value }));
+    // }
+    // return { handleSubmit, handleInputChange, inputs, isLoading };
+}
 
+// export const useSqlQuery = async (query) => {
+//     const [isLoading, setIsLoading] = useState(false);
+//     const [data, setData] = useState(null);
+//     const { token } = useAppContext();
 
-    return [isLoading, data];
-};
+//     setIsLoading(true);
+//     axios.post('http://localhost:8080/query', prepareBody(query), {
+//         headers: { Authorization: `Bearer ${token}` }
+//     }).then(response => {
+//         setData(response.data.data);
+//         setIsLoading(false);
+//     }).catch(error => {
+//         onError(error);
+//         setIsLoading(false);
+//     });
+
+//     return [isLoading, data];
+// };

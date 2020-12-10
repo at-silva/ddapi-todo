@@ -1,0 +1,15 @@
+{
+  "name": "ddapi-js",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "ddapi-sign": "./bin/sign.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
