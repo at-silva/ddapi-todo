@@ -2,10 +2,8 @@ module github.com/at-silva/ddapi-todo/backend
 
 go 1.15
 
-replace github.com/at-silva/ddapi => /home/atila/go/src/github.com/at-silva/ddapi
-
 require (
-	github.com/at-silva/ddapi v1.0.0
+	github.com/at-silva/ddapi v0.1.1
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/golang-migrate/migrate/v4 v4.14.1
 	github.com/jmoiron/sqlx v1.2.0

@@ -14,6 +14,7 @@ function prepareBody(q) {
     for (const prop in q.paramsSchema) {
         required.push(prop);
     }
+
     q.paramsSchema = {
         type: "object",
         required,
@@ -22,13 +23,13 @@ function prepareBody(q) {
         }
     }
 
-    return JSON.stringify({
+    return {
         ...q,
         sqlSignature: DDAPI_SIGNATURES[q.DDAPIID + "_sql"],
         paramsSchemaSignature: DDAPI_SIGNATURES[q.DDAPIID + "_params_schema"],
-        paramsSchema: JSON.stringify(q.paramsSchema),
-        params: JSON.stringify(q.params)
-    });
+        paramsSchema: q.paramsSchema,
+        params: q.params
+    };
 }
 
 export const ddapiExec = async (stmt, token) => {
@@ -36,7 +37,8 @@ export const ddapiExec = async (stmt, token) => {
         method: "POST",
         url: `${process.env.REACT_APP_BACKEND_URL}/exec?${stmt.DDAPIID}`,
         headers: {
-            Authorization: `Bearer ${token}`
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
         },
         data: prepareBody(stmt),
     });
@@ -49,7 +51,8 @@ export const ddapiQuery = async (query, token) => {
         method: "POST",
         url: `${process.env.REACT_APP_BACKEND_URL}/query?${query.DDAPIID}`,
         headers: {
-            Authorization: `Bearer ${token}`
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
         },
         data: prepareBody(query),
     });

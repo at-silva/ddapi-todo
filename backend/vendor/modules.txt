@@ -1,4 +1,4 @@
-# github.com/at-silva/ddapi v1.0.0 => /home/atila/go/src/github.com/at-silva/ddapi
+# github.com/at-silva/ddapi v0.1.1
 ## explicit
 github.com/at-silva/ddapi/check
 github.com/at-silva/ddapi/db
@@ -112,4 +112,3 @@ golang.org/x/xerrors/internal
 gopkg.in/tomb.v1
 # gopkg.in/yaml.v2 v2.3.0
 gopkg.in/yaml.v2
-# github.com/at-silva/ddapi => /home/atila/go/src/github.com/at-silva/ddapi
